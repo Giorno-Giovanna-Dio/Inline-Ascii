@@ -18,6 +18,12 @@ test("GET / serves the upload page", async () => {
   assert.match(response.text, /把聲音/);
 });
 
+test("GET /health reports service health", async () => {
+  const response = await request(createApp(fakeService)).get("/health");
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body, { status: "ok" });
+});
+
 test("POST /api/notes transcribes audio and returns Markdown", async () => {
   const response = await request(createApp(fakeService))
     .post("/api/notes")

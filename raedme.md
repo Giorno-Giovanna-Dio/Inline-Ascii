@@ -28,3 +28,19 @@ npm run dev
 ```bash
 npm test
 ```
+
+## 用手機部署到 Render
+
+1. 用手機瀏覽器開啟 [Render Dashboard](https://dashboard.render.com/) 並以 GitHub 登入。
+2. 選擇 **New > Blueprint**。
+3. 連結此 GitHub 儲存庫，Render 會自動讀取 `render.yaml`。
+4. 在提示畫面填入 `OPENAI_API_KEY`，再按 **Apply**。
+5. 部署完成後，開啟 Render 提供的網址即可使用。
+
+免費方案閒置後會休眠，因此第一次開啟可能需要等待約一分鐘。API Key
+只會儲存在 Render 的伺服器環境變數，不會傳給瀏覽器。
+
+### 為何此版本優先使用 Render
+
+Vercel Functions 可執行 Node.js，但請求本文與執行時間限制不利於較大的音檔上傳及
+STT 長任務。Render 直接執行常駐 Express 服務，較符合此 MVP 的 25 MB 上傳設計。

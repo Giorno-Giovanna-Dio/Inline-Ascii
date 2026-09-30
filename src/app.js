@@ -31,6 +31,10 @@ const upload = multer({
 export function createApp(noteService) {
   const app = express();
 
+  app.get("/health", (_request, response) => {
+    response.json({ status: "ok" });
+  });
+
   app.use(express.static(publicDir));
 
   app.post("/api/notes", upload.single("audio"), async (request, response) => {
