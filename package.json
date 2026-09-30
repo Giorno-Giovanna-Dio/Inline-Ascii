@@ -1,0 +1,23 @@
+{
+  "name": "audio-notes-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "openai": "^7.25.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.0"
+  }
+}

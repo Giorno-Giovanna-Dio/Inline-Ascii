@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="將音檔快速轉成結構化 Markdown 筆記" />
+    <title>Audio Notes</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="eyebrow">AI AUDIO NOTES</span>
+        <h1>把聲音，整理成<br /><em>可行動的筆記。</em></h1>
+        <p>上傳音檔、選擇格式，幾分鐘內取得逐字稿與 Markdown 筆記。</p>
+      </header>
+
+      <section class="card">
+        <form id="notes-form">
+          <label class="upload" for="audio">
+            <input id="audio" name="audio" type="file" accept="audio/*,.mp3,.mp4,.wav,.webm,.ogg,.flac" required />
+            <span class="upload-icon">↑</span>
+            <strong id="file-label">選擇或拖放音檔</strong>
+            <small>MP3、MP4、WAV、WebM、OGG、FLAC · 最多 25 MB</small>
+          </label>
+
+          <fieldset>
+            <legend>想要哪一種筆記？</legend>
+            <div class="types">
+              <label><input type="radio" name="noteType" value="meeting" checked /><span>會議紀錄</span></label>
+              <label><input type="radio" name="noteType" value="lecture" /><span>課堂筆記</span></label>
+              <label><input type="radio" name="noteType" value="interview" /><span>訪談摘要</span></label>
+              <label><input type="radio" name="noteType" value="summary" /><span>精簡重點</span></label>
+            </div>
+          </fieldset>
+
+          <button type="submit" id="submit">產生筆記 <span>→</span></button>
+          <p class="status" id="status" role="status"></p>
+        </form>
+      </section>
+
+      <section class="result hidden" id="result">
+        <div class="result-heading">
+          <div>
+            <span class="eyebrow">YOUR NOTES</span>
+            <h2>Markdown 筆記</h2>
+          </div>
+          <button class="secondary" id="copy" type="button">複製</button>
+        </div>
+        <textarea id="markdown" aria-label="Markdown 筆記"></textarea>
+        <details>
+          <summary>查看逐字稿</summary>
+          <p id="transcript"></p>
+        </details>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
