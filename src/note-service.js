@@ -32,6 +32,25 @@ export function getNoteInstruction(locale, noteType) {
   return prompts[noteType] || prompts.summary;
 }
 
+export function buildNoteInput(instruction, transcript, images = []) {
+  return [
+    {
+      role: "user",
+      content: [
+        {
+          type: "input_text",
+          text: `${instruction}\n\n文字起こし / 逐字稿：\n${transcript}\n\n添付画像がある場合は、スライド、板書、教材、課題の内容を追加の根拠として分析してください。`,
+        },
+        ...images.map((image) => ({
+          type: "input_image",
+          image_url: `data:${image.mimetype};base64,${image.buffer.toString("base64")}`,
+          detail: "auto",
+        })),
+      ],
+    },
+  ];
+}
+
 export function createNoteService({
   apiKey = process.env.OPENAI_API_KEY,
   transcriptionModel = process.env.STT_MODEL || "gpt-4o-mini-transcribe",
@@ -49,6 +68,7 @@ export function createNoteService({
       noteType,
       locale = "zh-Hant",
       outputLanguage = "original",
+      images = [],
     }) {
       const audio = await toFile(file.buffer, file.originalname, {
         type: file.mimetype,
@@ -83,8 +103,12 @@ export function createNoteService({
 
       const response = await client.responses.create({
         model: notesModel,
-        instructions: `あなたはプロのノート作成アシスタントです。出力は必ず${language}にしてください。文字起こしの内容だけを使用し、情報を捏造しないでください。有効な Markdown をコードフェンスなしで出力してください。`,
-        input: `${getNoteInstruction(resultLocale, noteType)}\n\n文字起こし / 逐字稿：\n${transcript}`,
+        instructions: `あなたはプロのノート作成アシスタントです。出力は必ず${language}にしてください。文字起こしと添付画像の内容だけを根拠として使用し、情報を捏造しないでください。有効な Markdown をコードフェンスなしで出力してください。`,
+        input: buildNoteInput(
+          getNoteInstruction(resultLocale, noteType),
+          transcript,
+          images,
+        ),
       });
 
       return {

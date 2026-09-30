@@ -54,6 +54,11 @@ header p { max-width: 570px; color: var(--muted); font-size: 18px; line-height: 
 .upload-icon { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 14px; border-radius: 50%; color: white; background: var(--accent); font-size: 25px; }
 .upload strong { font-size: 18px; }
 .upload small { margin-top: 7px; color: var(--muted); }
+.context-upload { display: flex; align-items: center; margin-top: 14px; padding: 15px; border: 1px solid var(--line); cursor: pointer; transition: .2s; }
+.context-upload:hover { border-color: var(--accent); background: #fff4ec; }
+.context-upload input { position: absolute; opacity: 0; pointer-events: none; }
+.context-upload span { display: flex; flex-direction: column; gap: 4px; }
+.context-upload small { color: var(--muted); }
 
 fieldset { margin: 32px 0; padding: 0; border: 0; }
 legend { margin-bottom: 14px; font-weight: 750; }

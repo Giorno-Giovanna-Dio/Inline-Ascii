@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import request from "supertest";
 import { createApp } from "../src/app.js";
-import { getNoteInstruction } from "../src/note-service.js";
+import { buildNoteInput, getNoteInstruction } from "../src/note-service.js";
 
 const fakeService = {
   async generate({ file, noteType }) {
@@ -32,6 +32,23 @@ test("lecture prompts follow the required five-part learning portfolio", () => {
   assert.match(japanese, /授業の要点/);
   assert.match(japanese, /学習前後の変化/);
   assert.match(japanese, /要追記/);
+});
+
+test("note input includes uploaded images as multimodal context", () => {
+  const input = buildNoteInput("整理筆記", "課堂逐字稿", [
+    {
+      mimetype: "image/png",
+      buffer: Buffer.from("slide"),
+    },
+  ]);
+
+  assert.equal(input[0].content[0].type, "input_text");
+  assert.match(input[0].content[0].text, /課堂逐字稿/);
+  assert.deepEqual(input[0].content[1], {
+    type: "input_image",
+    image_url: "data:image/png;base64,c2xpZGU=",
+    detail: "auto",
+  });
 });
 
 test("GET / serves the upload page", async () => {
@@ -74,6 +91,31 @@ test("POST /api/notes accepts M4A recordings from mobile devices", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(response.body.transcript, "transcribed:voice-memo.m4a");
+});
+
+test("POST /api/notes forwards images as analysis context", async () => {
+  let receivedImages;
+  const service = {
+    async generate({ images }) {
+      receivedImages = images;
+      return { transcript: "transcript", markdown: "# Notes" };
+    },
+  };
+  const response = await request(createApp(service))
+    .post("/api/notes")
+    .field("noteType", "lecture")
+    .attach("audio", Buffer.from("fake audio"), {
+      filename: "class.m4a",
+      contentType: "audio/m4a",
+    })
+    .attach("images", Buffer.from("slide"), {
+      filename: "slide.png",
+      contentType: "image/png",
+    });
+
+  assert.equal(response.status, 200);
+  assert.equal(receivedImages.length, 1);
+  assert.equal(receivedImages[0].originalname, "slide.png");
 });
 
 test("POST /api/notes forwards Japanese locale and output language", async () => {
@@ -146,4 +188,21 @@ test("POST /api/notes rejects unsupported files", async () => {
 
   assert.equal(response.status, 400);
   assert.match(response.body.error, /僅支援/);
+});
+
+test("POST /api/notes rejects unsupported image context", async () => {
+  const response = await request(createApp(fakeService))
+    .post("/api/notes")
+    .field("noteType", "lecture")
+    .attach("audio", Buffer.from("fake audio"), {
+      filename: "class.m4a",
+      contentType: "audio/m4a",
+    })
+    .attach("images", Buffer.from("document"), {
+      filename: "notes.pdf",
+      contentType: "application/pdf",
+    });
+
+  assert.equal(response.status, 400);
+  assert.match(response.body.error, /圖片僅支援/);
 });
