@@ -27,7 +27,12 @@ export function createNoteService({
   const client = new OpenAI({ apiKey });
 
   return {
-    async generate({ file, noteType, locale = "zh-Hant" }) {
+    async generate({
+      file,
+      noteType,
+      locale = "zh-Hant",
+      outputLanguage = "original",
+    }) {
       const audio = await toFile(file.buffer, file.originalname, {
         type: file.mimetype,
       });
@@ -35,9 +40,9 @@ export function createNoteService({
         file: audio,
         model: transcriptionModel,
       });
-      const transcript = transcription.text?.trim();
+      const originalTranscript = transcription.text?.trim();
 
-      if (!transcript) {
+      if (!originalTranscript) {
         throw new Error(
           locale === "ja"
             ? "音声を認識できませんでした"
@@ -45,8 +50,22 @@ export function createNoteService({
         );
       }
 
-      const language = locale === "ja" ? "日本語" : "繁體中文";
-      const prompts = instructions[locale] || instructions["zh-Hant"];
+      const resultLocale =
+        outputLanguage === "original" ? locale : outputLanguage;
+      const language = resultLocale === "ja" ? "日本語" : "繁體中文";
+      let transcript = originalTranscript;
+
+      if (outputLanguage !== "original") {
+        const translation = await client.responses.create({
+          model: notesModel,
+          instructions: `音声の文字起こしを${language}に翻訳してください。固有名詞、数値、話者名、改行、発言の意味を正確に保ってください。説明やコードフェンスを追加せず、翻訳した文字起こしだけを出力してください。`,
+          input: originalTranscript,
+        });
+        transcript = translation.output_text.trim();
+      }
+
+      const prompts =
+        instructions[resultLocale] || instructions["zh-Hant"];
       const response = await client.responses.create({
         model: notesModel,
         instructions: `あなたはプロのノート作成アシスタントです。出力は必ず${language}にしてください。文字起こしの内容だけを使用し、情報を捏造しないでください。有効な Markdown をコードフェンスなしで出力してください。`,
@@ -55,6 +74,7 @@ export function createNoteService({
 
       return {
         transcript,
+        ...(outputLanguage === "original" ? {} : { originalTranscript }),
         markdown: response.output_text.trim(),
       };
     },

@@ -30,6 +30,16 @@
           </label>
 
           <fieldset>
+            <label class="select-label" for="output-language" id="language-label">文字與筆記的輸出語言</label>
+            <select id="output-language" name="outputLanguage">
+              <option value="zh-Hant">繁體中文</option>
+              <option value="ja">日本語</option>
+              <option value="original">保留音檔原語言</option>
+            </select>
+            <small class="field-help" id="language-help">選擇日文時，中文語音也會翻譯成日文逐字稿。</small>
+          </fieldset>
+
+          <fieldset>
             <legend id="type-legend">想要哪一種筆記？</legend>
             <div class="types">
               <label><input type="radio" name="noteType" value="meeting" checked /><span id="type-meeting">會議紀錄</span></label>

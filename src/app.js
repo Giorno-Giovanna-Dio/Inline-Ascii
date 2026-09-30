@@ -22,6 +22,7 @@ const messages = {
     unsupported: "僅支援 MP3、MP4、M4A、WAV、WebM、OGG 或 FLAC 音檔",
     missingAudio: "請選擇音檔",
     missingType: "請選擇筆記類型",
+    invalidLanguage: "請選擇有效的輸出語言",
     tooLarge: "音檔不可超過 25 MB",
     uploadFailed: "上傳失敗",
     generationFailed: "無法產生筆記，請稍後再試",
@@ -30,6 +31,7 @@ const messages = {
     unsupported: "MP3、MP4、M4A、WAV、WebM、OGG、FLAC の音声ファイルに対応しています",
     missingAudio: "音声ファイルを選択してください",
     missingType: "ノートの種類を選択してください",
+    invalidLanguage: "有効な出力言語を選択してください",
     tooLarge: "音声ファイルは 25 MB 以下にしてください",
     uploadFailed: "アップロードに失敗しました",
     generationFailed: "ノートを作成できませんでした。しばらくしてからもう一度お試しください",
@@ -77,11 +79,17 @@ export function createApp(noteService) {
       return response.status(400).json({ error: text.missingType });
     }
 
+    const outputLanguage = request.body.outputLanguage || "original";
+    if (!["original", "zh-Hant", "ja"].includes(outputLanguage)) {
+      return response.status(400).json({ error: text.invalidLanguage });
+    }
+
     try {
       const result = await noteService.generate({
         file: request.file,
         noteType,
         locale,
+        outputLanguage,
       });
       return response.json(result);
     } catch (error) {

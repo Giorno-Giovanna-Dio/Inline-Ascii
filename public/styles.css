@@ -57,6 +57,9 @@ header p { max-width: 570px; color: var(--muted); font-size: 18px; line-height: 
 
 fieldset { margin: 32px 0; padding: 0; border: 0; }
 legend { margin-bottom: 14px; font-weight: 750; }
+.select-label { display: block; margin-bottom: 10px; font-weight: 750; }
+select { width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 0; color: var(--ink); background: white; font: inherit; }
+.field-help { display: block; margin-top: 8px; color: var(--muted); }
 .types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
 .types input { position: absolute; opacity: 0; }
 .types span { display: block; padding: 13px 10px; border: 1px solid var(--line); text-align: center; cursor: pointer; }
