@@ -8,6 +8,8 @@ const publicDir = path.join(__dirname, "..", "public");
 const allowedTypes = new Set([
   "audio/mpeg",
   "audio/mp4",
+  "audio/m4a",
+  "audio/x-m4a",
   "audio/wav",
   "audio/x-wav",
   "audio/webm",
@@ -22,7 +24,7 @@ const upload = multer({
     callback(
       allowedTypes.has(file.mimetype)
         ? null
-        : new Error("僅支援 MP3、MP4、WAV、WebM、OGG 或 FLAC 音檔"),
+        : new Error("僅支援 MP3、MP4、M4A、WAV、WebM、OGG 或 FLAC 音檔"),
       allowedTypes.has(file.mimetype),
     );
   },

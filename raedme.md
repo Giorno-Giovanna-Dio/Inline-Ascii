@@ -17,7 +17,7 @@ npm run dev
 
 ## 功能
 
-- 支援 MP3、MP4、WAV、WebM、OGG、FLAC（最大 25 MB）
+- 支援 MP3、MP4、M4A、WAV、WebM、OGG、FLAC（最大 25 MB）
 - 會議紀錄、課堂筆記、訪談摘要、精簡重點
 - 顯示原始逐字稿
 - 可編輯及一鍵複製 Markdown

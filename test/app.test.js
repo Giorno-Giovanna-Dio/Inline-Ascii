@@ -40,6 +40,19 @@ test("POST /api/notes transcribes audio and returns Markdown", async () => {
   });
 });
 
+test("POST /api/notes accepts M4A recordings from mobile devices", async () => {
+  const response = await request(createApp(fakeService))
+    .post("/api/notes")
+    .field("noteType", "summary")
+    .attach("audio", Buffer.from("fake m4a"), {
+      filename: "voice-memo.m4a",
+      contentType: "audio/x-m4a",
+    });
+
+  assert.equal(response.status, 200);
+  assert.equal(response.body.transcript, "transcribed:voice-memo.m4a");
+});
+
 test("POST /api/notes requires an audio file", async () => {
   const response = await request(createApp(fakeService))
     .post("/api/notes")
