@@ -16,6 +16,7 @@ test("GET / serves the upload page", async () => {
   const response = await request(createApp(fakeService)).get("/");
   assert.equal(response.status, 200);
   assert.match(response.text, /把聲音/);
+  assert.match(response.text, /日本語/);
 });
 
 test("GET /health reports service health", async () => {
@@ -53,6 +54,28 @@ test("POST /api/notes accepts M4A recordings from mobile devices", async () => {
   assert.equal(response.body.transcript, "transcribed:voice-memo.m4a");
 });
 
+test("POST /api/notes forwards Japanese locale to note generation", async () => {
+  let receivedLocale;
+  const service = {
+    async generate({ locale }) {
+      receivedLocale = locale;
+      return { transcript: "こんにちは", markdown: "# 要約" };
+    },
+  };
+  const response = await request(createApp(service))
+    .post("/api/notes?lang=ja")
+    .field("locale", "ja")
+    .field("noteType", "summary")
+    .attach("audio", Buffer.from("fake audio"), {
+      filename: "memo.m4a",
+      contentType: "audio/m4a",
+    });
+
+  assert.equal(response.status, 200);
+  assert.equal(receivedLocale, "ja");
+  assert.equal(response.body.markdown, "# 要約");
+});
+
 test("POST /api/notes requires an audio file", async () => {
   const response = await request(createApp(fakeService))
     .post("/api/notes")
@@ -60,6 +83,16 @@ test("POST /api/notes requires an audio file", async () => {
 
   assert.equal(response.status, 400);
   assert.equal(response.body.error, "請選擇音檔");
+});
+
+test("POST /api/notes returns validation errors in Japanese", async () => {
+  const response = await request(createApp(fakeService))
+    .post("/api/notes?lang=ja")
+    .field("locale", "ja")
+    .field("noteType", "summary");
+
+  assert.equal(response.status, 400);
+  assert.equal(response.body.error, "音声ファイルを選択してください");
 });
 
 test("POST /api/notes rejects unsupported files", async () => {

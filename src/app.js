@@ -17,6 +17,31 @@ const allowedTypes = new Set([
   "audio/flac",
 ]);
 
+const messages = {
+  "zh-Hant": {
+    unsupported: "僅支援 MP3、MP4、M4A、WAV、WebM、OGG 或 FLAC 音檔",
+    missingAudio: "請選擇音檔",
+    missingType: "請選擇筆記類型",
+    tooLarge: "音檔不可超過 25 MB",
+    uploadFailed: "上傳失敗",
+    generationFailed: "無法產生筆記，請稍後再試",
+  },
+  ja: {
+    unsupported: "MP3、MP4、M4A、WAV、WebM、OGG、FLAC の音声ファイルに対応しています",
+    missingAudio: "音声ファイルを選択してください",
+    missingType: "ノートの種類を選択してください",
+    tooLarge: "音声ファイルは 25 MB 以下にしてください",
+    uploadFailed: "アップロードに失敗しました",
+    generationFailed: "ノートを作成できませんでした。しばらくしてからもう一度お試しください",
+  },
+};
+
+function localeFor(request) {
+  return request.body?.locale === "ja" || request.query.lang === "ja"
+    ? "ja"
+    : "zh-Hant";
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 },
@@ -24,7 +49,7 @@ const upload = multer({
     callback(
       allowedTypes.has(file.mimetype)
         ? null
-        : new Error("僅支援 MP3、MP4、M4A、WAV、WebM、OGG 或 FLAC 音檔"),
+        : new Error("UNSUPPORTED_AUDIO"),
       allowedTypes.has(file.mimetype),
     );
   },
@@ -40,34 +65,42 @@ export function createApp(noteService) {
   app.use(express.static(publicDir));
 
   app.post("/api/notes", upload.single("audio"), async (request, response) => {
+    const locale = localeFor(request);
+    const text = messages[locale];
+
     if (!request.file) {
-      return response.status(400).json({ error: "請選擇音檔" });
+      return response.status(400).json({ error: text.missingAudio });
     }
 
     const noteType = request.body.noteType?.trim();
     if (!noteType) {
-      return response.status(400).json({ error: "請選擇筆記類型" });
+      return response.status(400).json({ error: text.missingType });
     }
 
     try {
       const result = await noteService.generate({
         file: request.file,
         noteType,
+        locale,
       });
       return response.json(result);
     } catch (error) {
       console.error("產生筆記失敗", error);
       return response.status(502).json({
-        error: error?.message || "無法產生筆記，請稍後再試",
+        error: error?.message || text.generationFailed,
       });
     }
   });
 
   app.use((error, _request, response, _next) => {
+    const locale = localeFor(_request);
+    const text = messages[locale];
     if (error instanceof multer.MulterError && error.code === "LIMIT_FILE_SIZE") {
-      return response.status(413).json({ error: "音檔不可超過 25 MB" });
+      return response.status(413).json({ error: text.tooLarge });
     }
-    return response.status(400).json({ error: error.message || "上傳失敗" });
+    const message =
+      error.message === "UNSUPPORTED_AUDIO" ? text.unsupported : error.message;
+    return response.status(400).json({ error: message || text.uploadFailed });
   });
 
   return app;

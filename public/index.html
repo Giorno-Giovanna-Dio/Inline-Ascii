@@ -9,32 +9,37 @@
   </head>
   <body>
     <main>
+      <nav aria-label="Language">
+        <button class="language active" type="button" data-locale="zh-Hant">繁中</button>
+        <button class="language" type="button" data-locale="ja">日本語</button>
+      </nav>
       <header>
         <span class="eyebrow">AI AUDIO NOTES</span>
-        <h1>把聲音，整理成<br /><em>可行動的筆記。</em></h1>
-        <p>上傳音檔、選擇格式，幾分鐘內取得逐字稿與 Markdown 筆記。</p>
+        <h1 id="hero-title">把聲音，整理成<br /><em>可行動的筆記。</em></h1>
+        <p id="hero-description">上傳音檔、選擇格式，幾分鐘內取得逐字稿與 Markdown 筆記。</p>
       </header>
 
       <section class="card">
         <form id="notes-form">
+          <input id="locale" name="locale" type="hidden" value="zh-Hant" />
           <label class="upload" for="audio">
             <input id="audio" name="audio" type="file" accept="audio/*,.mp3,.mp4,.m4a,.wav,.webm,.ogg,.flac" required />
             <span class="upload-icon">↑</span>
             <strong id="file-label">選擇或拖放音檔</strong>
-            <small>MP3、MP4、M4A、WAV、WebM、OGG、FLAC · 最多 25 MB</small>
+            <small id="file-help">MP3、MP4、M4A、WAV、WebM、OGG、FLAC · 最多 25 MB</small>
           </label>
 
           <fieldset>
-            <legend>想要哪一種筆記？</legend>
+            <legend id="type-legend">想要哪一種筆記？</legend>
             <div class="types">
-              <label><input type="radio" name="noteType" value="meeting" checked /><span>會議紀錄</span></label>
-              <label><input type="radio" name="noteType" value="lecture" /><span>課堂筆記</span></label>
-              <label><input type="radio" name="noteType" value="interview" /><span>訪談摘要</span></label>
-              <label><input type="radio" name="noteType" value="summary" /><span>精簡重點</span></label>
+              <label><input type="radio" name="noteType" value="meeting" checked /><span id="type-meeting">會議紀錄</span></label>
+              <label><input type="radio" name="noteType" value="lecture" /><span id="type-lecture">課堂筆記</span></label>
+              <label><input type="radio" name="noteType" value="interview" /><span id="type-interview">訪談摘要</span></label>
+              <label><input type="radio" name="noteType" value="summary" /><span id="type-summary">精簡重點</span></label>
             </div>
           </fieldset>
 
-          <button type="submit" id="submit">產生筆記 <span>→</span></button>
+          <button type="submit" id="submit"><span id="submit-label">產生筆記</span> <span>→</span></button>
           <p class="status" id="status" role="status"></p>
         </form>
       </section>
@@ -43,13 +48,13 @@
         <div class="result-heading">
           <div>
             <span class="eyebrow">YOUR NOTES</span>
-            <h2>Markdown 筆記</h2>
+            <h2 id="result-title">Markdown 筆記</h2>
           </div>
           <button class="secondary" id="copy" type="button">複製</button>
         </div>
         <textarea id="markdown" aria-label="Markdown 筆記"></textarea>
         <details>
-          <summary>查看逐字稿</summary>
+          <summary id="transcript-label">查看逐字稿</summary>
           <p id="transcript"></p>
         </details>
       </section>

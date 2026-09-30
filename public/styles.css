@@ -23,6 +23,9 @@ body {
 }
 
 main { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 72px 0; }
+nav { display: flex; justify-content: flex-end; gap: 5px; margin-bottom: 30px; }
+.language { padding: 7px 11px; border: 1px solid var(--line); background: var(--card); color: var(--muted); }
+.language.active { border-color: var(--ink); color: white; background: var(--ink); }
 header { margin-bottom: 40px; }
 .eyebrow { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .18em; }
 h1 { margin: 14px 0 18px; font: 700 clamp(42px, 8vw, 76px)/.98 Georgia, serif; letter-spacing: -.045em; }
