@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import request from "supertest";
 import { createApp } from "../src/app.js";
+import { getNoteInstruction } from "../src/note-service.js";
 
 const fakeService = {
   async generate({ file, noteType }) {
@@ -11,6 +12,27 @@ const fakeService = {
     };
   },
 };
+
+test("lecture prompts follow the required five-part learning portfolio", () => {
+  const traditionalChinese = getNoteInstruction("zh-Hant", "lecture");
+  const japanese = getNoteInstruction("ja", "lecture");
+
+  for (const heading of [
+    "上課重點",
+    "作業",
+    "上課心得",
+    "自行蒐集的資料",
+    "其他（總結）",
+    "學習前後的差異",
+    "學習過程與成果",
+  ]) {
+    assert.match(traditionalChinese, new RegExp(heading));
+  }
+  assert.match(traditionalChinese, /待補充/);
+  assert.match(japanese, /授業の要点/);
+  assert.match(japanese, /学習前後の変化/);
+  assert.match(japanese, /要追記/);
+});
 
 test("GET / serves the upload page", async () => {
   const response = await request(createApp(fakeService)).get("/");
