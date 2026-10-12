@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="將音檔快速轉成結構化 Markdown 筆記" />
+    <title>Audio Notes</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <nav aria-label="Language">
+        <button class="language active" type="button" data-locale="zh-Hant">繁中</button>
+        <button class="language" type="button" data-locale="ja">日本語</button>
+      </nav>
+      <header>
+        <span class="eyebrow">AI AUDIO NOTES</span>
+        <h1 id="hero-title">把聲音，整理成<br /><em>可行動的筆記。</em></h1>
+        <p id="hero-description">上傳音檔、選擇格式，幾分鐘內取得逐字稿與 Markdown 筆記。</p>
+      </header>
+
+      <section class="card">
+        <form id="notes-form">
+          <input id="locale" name="locale" type="hidden" value="zh-Hant" />
+          <label class="upload" for="audio">
+            <input id="audio" name="audio" type="file" accept="audio/*,.mp3,.mp4,.m4a,.wav,.webm,.ogg,.flac" required />
+            <span class="upload-icon">↑</span>
+            <strong id="file-label">選擇或拖放音檔</strong>
+            <small id="file-help">MP3、MP4、M4A、WAV、WebM、OGG、FLAC · 最多 25 MB</small>
+          </label>
+
+          <label class="context-upload" for="images">
+            <input id="images" name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
+            <span>
+              <strong id="image-label">＋ 加入圖片脈絡（選填）</strong>
+              <small id="image-help">投影片、白板、講義或作業 · 最多 5 張，每張 10 MB</small>
+            </span>
+          </label>
+
+          <fieldset>
+            <label class="select-label" for="output-language" id="language-label">文字與筆記的輸出語言</label>
+            <select id="output-language" name="outputLanguage">
+              <option value="zh-Hant">繁體中文</option>
+              <option value="ja">日本語</option>
+              <option value="original">保留音檔原語言</option>
+            </select>
+            <small class="field-help" id="language-help">選擇日文時，中文語音也會翻譯成日文逐字稿。</small>
+          </fieldset>
+
+          <fieldset>
+            <legend id="type-legend">想要哪一種筆記？</legend>
+            <div class="types">
+              <label><input type="radio" name="noteType" value="meeting" checked /><span id="type-meeting">會議紀錄</span></label>
+              <label><input type="radio" name="noteType" value="lecture" /><span id="type-lecture">課堂筆記</span></label>
+              <label><input type="radio" name="noteType" value="interview" /><span id="type-interview">訪談摘要</span></label>
+              <label><input type="radio" name="noteType" value="summary" /><span id="type-summary">精簡重點</span></label>
+            </div>
+          </fieldset>
+
+          <button type="submit" id="submit"><span id="submit-label">產生筆記</span> <span>→</span></button>
+          <p class="status" id="status" role="status"></p>
+        </form>
+      </section>
+
+      <section class="result hidden" id="result">
+        <div class="result-heading">
+          <div>
+            <span class="eyebrow">YOUR NOTES</span>
+            <h2 id="result-title">Markdown 筆記</h2>
+          </div>
+          <button class="secondary" id="copy" type="button">複製</button>
+        </div>
+        <textarea id="markdown" aria-label="Markdown 筆記"></textarea>
+        <details>
+          <summary id="transcript-label">查看逐字稿</summary>
+          <p id="transcript"></p>
+        </details>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

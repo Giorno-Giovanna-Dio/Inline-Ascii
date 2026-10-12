@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: audio-notes-mvp
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STT_MODEL
+        value: gpt-4o-mini-transcribe
+      - key: NOTES_MODEL
+        value: gpt-5-mini
